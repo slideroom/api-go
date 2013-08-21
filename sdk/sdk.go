@@ -22,6 +22,7 @@ const (
 
 // SlideroomAPI holds information for the client (like api key and organization code)
 type SlideroomAPI struct {
+	baseURL             string
 	apiHashKey          string
 	organizationCode    string
 	accountEmailAddress string
@@ -31,10 +32,11 @@ type SlideroomAPI struct {
 // New returns an instance of a SlideroomAPI object that you can call on
 func New(apiHashKey, accountEmailAddress, organizationCode string) *SlideroomAPI {
 	return &SlideroomAPI{
-		apiHashKey,
-		organizationCode,
-		accountEmailAddress,
-		defaultRequestTimeSpan,
+		baseURL:             apiRoot,
+		apiHashKey:          apiHashKey,
+		organizationCode:    organizationCode,
+		accountEmailAddress: accountEmailAddress,
+		requestTimeSpan:     defaultRequestTimeSpan,
 	}
 }
 
@@ -45,15 +47,15 @@ func (this *SlideroomAPI) generateSignature(url string) string {
 	return base64.StdEncoding.EncodeToString(mac.Sum(nil))
 }
 
-func generateURL(path string, params url.Values) string {
-	return fmt.Sprintf("%s/%s?%s", apiRoot, path, params.Encode())
+func (this *SlideroomAPI) generateURL(path string, params url.Values) string {
+	return fmt.Sprintf("%s/%s?%s", this.baseURL, path, params.Encode())
 }
 
 func (this *SlideroomAPI) generateFullURL(path string, params url.Values) string {
 	params.Add("expires", strconv.FormatInt((time.Now().Add(this.requestTimeSpan).Unix()), 10))
 	params.Add("email", this.accountEmailAddress)
 
-	fullURL := generateURL(path, params)
+	fullURL := this.generateURL(path, params)
 
 	sigParams := url.Values{}
 	sigParams.Add("signature", this.generateSignature(fullURL))
