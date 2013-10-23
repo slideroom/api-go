@@ -2,12 +2,14 @@ package sdk
 
 import (
 	"net/http"
+	"net/url"
 	"testing"
 )
 
 func mockDownloadArgs() (urlToHandle string, token int) {
 	token = 123
-	urlToHandle = "/" + client.downloadExportEndpointURL(token)
+
+	urlToHandle = "/" + client.normalizeURL(downloadExportEndpointURL(), url.Values{})
 
 	return
 }

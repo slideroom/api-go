@@ -2,20 +2,14 @@
 package sdk
 
 import (
-	"crypto/hmac"
-	"crypto/sha1"
-	"encoding/base64"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"strconv"
-	"strings"
 	"time"
 )
 
 const (
-	apiRoot = "https://review.slideroom.com/api"
+	apiRoot = "https://api.slideroom.com"
 
 	defaultRequestTimeSpan = 1 * time.Minute
 )
@@ -24,50 +18,27 @@ const (
 type SlideroomAPI struct {
 	baseURL             string
 	apiHashKey          string
+	apiAccessKey        string
 	organizationCode    string
 	accountEmailAddress string
 	requestTimeSpan     time.Duration
 }
 
 // New returns an instance of a SlideroomAPI object that you can call on
-func New(apiHashKey, accountEmailAddress, organizationCode string) *SlideroomAPI {
+func New(apiHashKey, apiAccessKey, accountEmailAddress, organizationCode string) *SlideroomAPI {
 	return &SlideroomAPI{
 		baseURL:             apiRoot,
 		apiHashKey:          apiHashKey,
+		apiAccessKey:        apiAccessKey,
 		organizationCode:    organizationCode,
 		accountEmailAddress: accountEmailAddress,
 		requestTimeSpan:     defaultRequestTimeSpan,
 	}
 }
 
-func (this *SlideroomAPI) generateSignature(url string) string {
-	lowerURL := strings.ToLower(url)
-	mac := hmac.New(sha1.New, []byte(this.apiHashKey))
-	mac.Write([]byte(lowerURL))
-	return base64.StdEncoding.EncodeToString(mac.Sum(nil))
-}
-
-func (this *SlideroomAPI) generateURL(path string, params url.Values) string {
-	return fmt.Sprintf("%s/%s?%s", this.baseURL, path, params.Encode())
-}
-
-func (this *SlideroomAPI) generateFullURL(path string, params url.Values) string {
-	params.Add("expires", strconv.FormatInt((time.Now().Add(this.requestTimeSpan).Unix()), 10))
-	params.Add("email", this.accountEmailAddress)
-
-	fullURL := this.generateURL(path, params)
-
-	sigParams := url.Values{}
-	sigParams.Add("signature", this.generateSignature(fullURL))
-
-	fullURL = fmt.Sprintf("%s&%s", fullURL, sigParams.Encode())
-
-	return fullURL
-}
-
 // takes a path and some params, adds in expires and sig params and returns the result
-func (this *SlideroomAPI) get(path string, params url.Values) (b []byte, status int, err error) {
-	res, err := this.getRaw(path, params)
+func (s *SlideroomAPI) get(path string, params url.Values) (b []byte, status int, err error) {
+	res, err := s.getRaw(path, params)
 	if err != nil {
 		return nil, http.StatusBadRequest, err
 	}
@@ -82,8 +53,8 @@ func (this *SlideroomAPI) get(path string, params url.Values) (b []byte, status 
 	return
 }
 
-func (this *SlideroomAPI) getRaw(path string, params url.Values) (res *http.Response, err error) {
-	fullURL := this.generateFullURL(path, params)
+func (s *SlideroomAPI) getRaw(path string, params url.Values) (res *http.Response, err error) {
+	fullURL := s.generateFullURL(path, params)
 
 	res, err = http.Get(fullURL)
 	return

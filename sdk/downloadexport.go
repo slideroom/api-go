@@ -14,17 +14,20 @@ type DownloadExportResponse struct {
 	Pending bool
 
 	// The actual data of the download, if pending is false
-	Export *io.ReadCloser
+	Export io.ReadCloser
 }
 
-func (this *SlideroomAPI) downloadExportEndpointURL(token int) string {
-	return fmt.Sprintf("export/%s/%s", this.organizationCode, strconv.Itoa(token))
+func downloadExportEndpointURL() string {
+	return fmt.Sprintf("export/download")
 }
 
 // DownloadExport checks a token
-func (this *SlideroomAPI) DownloadExport(token int) (downloadRes *DownloadExportResponse, err error) {
-	path := this.downloadExportEndpointURL(token)
-	res, err := this.getRaw(path, url.Values{})
+func (s *SlideroomAPI) DownloadExport(token int) (downloadRes *DownloadExportResponse, err error) {
+	path := downloadExportEndpointURL()
+
+	params := url.Values{}
+	params.Add("token", strconv.Itoa(token))
+	res, err := s.getRaw(path, params)
 
 	if err != nil {
 		return
@@ -39,7 +42,7 @@ func (this *SlideroomAPI) DownloadExport(token int) (downloadRes *DownloadExport
 	case http.StatusOK:
 		downloadRes = &DownloadExportResponse{
 			Pending: false,
-			Export:  &res.Body,
+			Export:  res.Body,
 		}
 
 	default:

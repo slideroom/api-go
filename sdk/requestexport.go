@@ -25,8 +25,8 @@ const (
 )
 
 // converts an ExportFormat to an extension
-func (this ExportFormat) String() string {
-	switch this {
+func (e ExportFormat) String() string {
+	switch e {
 	case Csv:
 		return "csv"
 
@@ -56,21 +56,23 @@ type RequestExportResponse struct {
 	Message string `json:"message"`
 }
 
-func (this *SlideroomAPI) requestExportEndpointURL(resource string) string {
-	return fmt.Sprintf("export/%s/%s", this.organizationCode, resource)
+func requestExportEndpointURL() string {
+	return fmt.Sprintf("export/request")
 }
 
 // RequestExportWithSearch will request an export with a format filtering the results with a saved search
 // You can find your export names in Settings->Custom Exports (use the title)
-func (this *SlideroomAPI) RequestExportWithSearch(exportName string, format ExportFormat, search string) (res *RequestExportResponse, err error) {
+func (s *SlideroomAPI) RequestExportWithSearch(exportName string, format ExportFormat, search string) (res *RequestExportResponse, err error) {
 	params := url.Values{}
 
 	if len(search) > 0 {
 		params.Add("ss", search)
 	}
 
-	resource := fmt.Sprintf("%s.%s", exportName, format)
-	b, status, err := this.get(this.requestExportEndpointURL(resource), params)
+	params.Add("export", exportName)
+	params.Add("format", format.String())
+
+	b, status, err := s.get(requestExportEndpointURL(), params)
 	if err != nil {
 		return
 	}
@@ -85,6 +87,6 @@ func (this *SlideroomAPI) RequestExportWithSearch(exportName string, format Expo
 
 // RequestExport will request an export using the complete set of submissions
 // You can find your export names in Settings->Custom Exports (use the title)
-func (this *SlideroomAPI) RequestExport(exportName string, format ExportFormat) (res *RequestExportResponse, err error) {
-	return this.RequestExportWithSearch(exportName, format, "")
+func (s *SlideroomAPI) RequestExport(exportName string, format ExportFormat) (res *RequestExportResponse, err error) {
+	return s.RequestExportWithSearch(exportName, format, "")
 }

@@ -3,6 +3,7 @@ package sdk
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 	"testing"
 )
 
@@ -15,7 +16,10 @@ var goodRequestResponse = `{
 func mockExportArgs() (urlToHandle, exportName string, format ExportFormat) {
 	exportName = "test"
 	format = Csv
-	urlToHandle = "/" + client.requestExportEndpointURL(exportName) + "." + format.String()
+
+	params := url.Values{}
+
+	urlToHandle = "/" + client.normalizeURL(requestExportEndpointURL(), params)
 
 	return
 }

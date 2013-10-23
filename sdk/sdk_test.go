@@ -17,7 +17,7 @@ func setup() {
 	mux = http.NewServeMux()
 	server = httptest.NewServer(mux)
 
-	client = New("apikey", "email@email.com", "orgcode")
+	client = New("apikey", "secretkey", "email@email.com", "orgcode")
 	url, _ := url.Parse(server.URL)
 	client.baseURL = url.String()
 }

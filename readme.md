@@ -14,41 +14,47 @@ import (
 )
 
 const (
-  apiKey = "Your API Key"
-  loginEmail = "your@email.com"
-  organizationCode = "sampleorgcode"
+	hashKey          = "Your Hash Key"
+	accessKey        = "Your Access Key"
+	loginEmail       = "sample@sample.com"
+	organizationCode = "sample"
 )
 
 func main() {
-	s := sdk.New(apiKey, loginEmail, organizationCode)
+	s := sdk.New(hashKey, accessKey, loginEmail, organizationCode)
 
-	requestRes, err := s.RequestExport("Sample", sdk.Txt)
+	// make a request
+	//requestRes, err := s.RequestExportWithSearch("Sample", sdk.Csv, "Dallas")
+	requestRes, err := s.RequestExport("Sample", sdk.Csv)
+
+	fmt.Println(requestRes.Submissions)
 
 	if err != nil {
 		panic(err)
 	}
 
-	// check every second until it is done
-	c := time.Tick(1 * time.Second)
+	// check every 10 seconds until it is done
+	c := time.Tick(10 * time.Second)
 
 	for {
+		<-c
+
 		downloadRes, err := s.DownloadExport(requestRes.Token)
 
 		if err != nil {
-			continue
+			panic(err)
 		}
 
 		if downloadRes.Pending == false {
-			b, err := ioutil.ReadAll(*downloadRes.Export)
+			b, err := ioutil.ReadAll(downloadRes.Export)
 			if err != nil {
 				panic(err)
 			}
 
 			fmt.Printf(string(b))
+			downloadRes.Export.Close()
 			return
 		}
-
-		<-c
 	}
 }
 ```
