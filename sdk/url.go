@@ -14,7 +14,7 @@ import (
 
 func signParams(params url.Values, key string) string {
 	keys := make([]string, 0)
-	for k, _ := range params {
+	for k := range params {
 		keys = append(keys, k+"="+params.Get(k))
 	}
 

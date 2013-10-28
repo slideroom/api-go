@@ -22,11 +22,14 @@ type SlideroomAPI struct {
 	organizationCode    string
 	accountEmailAddress string
 	requestTimeSpan     time.Duration
+
+	// Resources
+	Export *SlideRoomResourceExport
 }
 
 // New returns an instance of a SlideroomAPI object that you can call on
 func New(apiHashKey, apiAccessKey, accountEmailAddress, organizationCode string) *SlideroomAPI {
-	return &SlideroomAPI{
+	client := &SlideroomAPI{
 		baseURL:             apiRoot,
 		apiHashKey:          apiHashKey,
 		apiAccessKey:        apiAccessKey,
@@ -34,6 +37,11 @@ func New(apiHashKey, apiAccessKey, accountEmailAddress, organizationCode string)
 		accountEmailAddress: accountEmailAddress,
 		requestTimeSpan:     defaultRequestTimeSpan,
 	}
+
+	// set up the resources
+	client.Export = newExportResource(client)
+
+	return client
 }
 
 // takes a path and some params, adds in expires and sig params and returns the result
