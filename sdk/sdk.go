@@ -64,6 +64,11 @@ func (s *SlideroomAPI) get(path string, params url.Values) (b []byte, status int
 func (s *SlideroomAPI) getRaw(path string, params url.Values) (res *http.Response, err error) {
 	fullURL := s.generateFullURL(path, params)
 
-	res, err = http.Get(fullURL)
+	client := &http.Client{}
+	request, err := http.NewRequest("GET", fullURL, nil)
+	request.Header.Set("User-Agent", "SlideRoom go client ("+slideroomClientVersion+")")
+
+	res, err = client.Do(request)
+
 	return
 }
