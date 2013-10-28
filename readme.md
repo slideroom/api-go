@@ -24,8 +24,8 @@ func main() {
 	s := sdk.New(hashKey, accessKey, loginEmail, organizationCode)
 
 	// make a request
-	//requestRes, err := s.RequestExportWithSearch("Sample", sdk.Csv, "Dallas")
-	requestRes, err := s.RequestExport("Sample", sdk.Csv)
+	//requestRes, err := s.Export.RequestWithSearch("Sample", sdk.Csv, "Dallas")
+	requestRes, err := s.Export.Request("Sample", sdk.Csv)
 
 	fmt.Println(requestRes.Submissions)
 
@@ -39,7 +39,7 @@ func main() {
 	for {
 		<-c
 
-		downloadRes, err := s.DownloadExport(requestRes.Token)
+		downloadRes, err := s.Export.Download(requestRes.Token)
 
 		if err != nil {
 			panic(err)
