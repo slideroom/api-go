@@ -1,4 +1,4 @@
-package sdk
+package api
 
 // ExportFormat holds the formats that a download can be in
 type ExportFormat int

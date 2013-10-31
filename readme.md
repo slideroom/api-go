@@ -1,6 +1,4 @@
-# SlideRoom API Go Client
-
-A SlideRoom API Client written in Go
+# A SlideRoom API Client written in Go
 
 ## Example
 ```go
@@ -8,7 +6,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/slideroom/sdk-go/sdk"
+	"github.com/slideroom/api-go/api"
 	"io/ioutil"
 	"time"
 )
@@ -21,7 +19,7 @@ const (
 )
 
 func main() {
-	s := sdk.New(hashKey, accessKey, loginEmail, organizationCode)
+	s := api.New(hashKey, accessKey, loginEmail, organizationCode)
 
 	// make a request
 	//requestRes, err := s.Export.RequestWithSearch("Sample", sdk.Csv, "Dallas")
@@ -62,6 +60,6 @@ func main() {
 ## Install
 
 ```bash
-go install github.com/slideroom/sdk-go/sdk
+go install github.com/slideroom/api-go/sdk
 ```
 

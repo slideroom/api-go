@@ -1,5 +1,5 @@
 // Package sdk provides api wrappers for SlideRoom
-package sdk
+package api
 
 import (
 	"io/ioutil"
