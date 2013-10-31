@@ -22,8 +22,8 @@ func main() {
 	s := api.New(hashKey, accessKey, loginEmail, organizationCode)
 
 	// make a request
-	//requestRes, err := s.Export.RequestWithSearch("Sample", sdk.Csv, "Dallas")
-	requestRes, err := s.Export.Request("Sample", sdk.Csv)
+	//requestRes, err := s.Export.RequestWithSearch("Sample", api.Csv, "Dallas")
+	requestRes, err := s.Export.Request("Sample", api.Csv)
 
 	fmt.Println(requestRes.Submissions)
 
@@ -60,6 +60,6 @@ func main() {
 ## Install
 
 ```bash
-go install github.com/slideroom/api-go/sdk
+go install github.com/slideroom/api-go/api
 ```
 
