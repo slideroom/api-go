@@ -6,7 +6,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/slideroom/api-go/api"
+	"github.com/slideroom/api-go/slideroomapi"
 	"io/ioutil"
 	"time"
 )
@@ -19,11 +19,11 @@ const (
 )
 
 func main() {
-	s := api.New(hashKey, accessKey, loginEmail, organizationCode)
+	s := slideroomapi.New(hashKey, accessKey, loginEmail, organizationCode)
 
 	// make a request
-	//requestRes, err := s.Export.RequestWithSearch("Sample", api.Csv, "Dallas")
-	requestRes, err := s.Export.Request("Sample", api.Csv)
+	//requestRes, err := s.Export.RequestWithSearch("Sample", slideroomapi.Csv, "Dallas")
+	requestRes, err := s.Export.Request("Sample", slideroomapi.Csv)
 
 	fmt.Println(requestRes.Submissions)
 
@@ -60,6 +60,6 @@ func main() {
 ## Install
 
 ```bash
-go install github.com/slideroom/api-go/api
+go install github.com/slideroom/api-go/slideroomapi
 ```
 

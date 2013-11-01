@@ -1,4 +1,4 @@
-package api
+package slideroomapi
 
 // ExportFormat holds the formats that a download can be in
 type ExportFormat int
