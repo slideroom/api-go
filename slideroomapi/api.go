@@ -1,4 +1,4 @@
-// Package sdk provides api wrappers for SlideRoom
+// Package slideroomapi provides api wrappers for SlideRoom
 package slideroomapi
 
 import (
