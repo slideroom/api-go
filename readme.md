@@ -63,3 +63,6 @@ func main() {
 go install github.com/slideroom/api-go/slideroomapi
 ```
 
+## Documentation
+
+[http://godoc.org/github.com/slideroom/api-go/slideroomapi](http://godoc.org/github.com/slideroom/api-go/slideroomapi)
