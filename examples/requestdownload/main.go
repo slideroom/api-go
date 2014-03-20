@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/slideroom/sdk-go/sdk"
+	"github.com/slideroom/api-go/slideroomapi"
 	"io/ioutil"
 	"time"
 )
@@ -15,11 +15,11 @@ const (
 )
 
 func main() {
-	s := sdk.New(hashKey, accessKey, loginEmail, organizationCode)
+	s := slideroomapi.New(hashKey, accessKey, loginEmail, organizationCode)
 
 	// make a request
-	//requestRes, err := s.Export.RequestWithSearch("Sample", sdk.Csv, "Dallas")
-	requestRes, err := s.Export.Request("Sample", sdk.Csv)
+	//requestRes, err := s.Export.RequestWithSearch("Sample", slideroomapi.Csv, "Dallas")
+	requestRes, err := s.Export.Request("Sample", slideroomapi.Csv)
 
 	fmt.Println(requestRes.Submissions)
 
