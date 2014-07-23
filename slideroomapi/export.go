@@ -32,15 +32,19 @@ type RequestExportResponse struct {
 }
 
 // RequestWithSearch will request an export with a format filtering the results with a saved search
-// You can find your export names in Settings->Custom Exports (use the title)
-func (e *SlideRoomResourceExport) RequestWithSearch(exportName string, format ExportFormat, search string) (res *RequestExportResponse, err error) {
+//
+// Parameters:
+//   exportTitle - The title of a Custom Export (You can find your exports in Settings->Custom Exports)
+//   format - The format of the export (see ExportFormat)
+//   savedSearchName - The name of a search you have saved from review.slideroom.com
+func (e *SlideRoomResourceExport) RequestWithSearch(exportTitle string, format ExportFormat, savedSearchName string) (res *RequestExportResponse, err error) {
 	params := url.Values{}
 
-	if len(search) > 0 {
-		params.Add("ss", search)
+	if len(savedSearchName) > 0 {
+		params.Add("ss", savedSearchName)
 	}
 
-	params.Add("export", exportName)
+	params.Add("export", exportTitle)
 	params.Add("format", format.String())
 
 	b, status, err := e.client.get("export/request", params)
@@ -57,7 +61,10 @@ func (e *SlideRoomResourceExport) RequestWithSearch(exportName string, format Ex
 }
 
 // Request will request an export using the complete set of submissions
-// You can find your export names in Settings->Custom Exports (use the title)
+//
+// Parameters:
+//   exportTitle - The title of a Custom Export (You can find your exports in Settings->Custom Exports)
+//   format - The format of the export (see ExportFormat)
 func (e *SlideRoomResourceExport) Request(exportName string, format ExportFormat) (res *RequestExportResponse, err error) {
 	return e.RequestWithSearch(exportName, format, "")
 }
