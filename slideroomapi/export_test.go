@@ -3,7 +3,9 @@ package slideroomapi
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"testing"
+	"time"
 )
 
 var goodRequestResponse = `{
@@ -28,11 +30,43 @@ func TestSuccessRequest(t *testing.T) {
 	urlToHandle, exportName, format := mockRequestExportArgs()
 
 	mux.HandleFunc(urlToHandle, func(w http.ResponseWriter, r *http.Request) {
+		_, ok := r.URL.Query()["since"]
+		if ok == true {
+			t.Error("parameter 'since' should not be here")
+		}
+
 		w.WriteHeader(http.StatusAccepted)
 		fmt.Fprintf(w, goodRequestResponse)
 	})
 
 	_, err := client.Export.Request(exportName, format)
+
+	if err != nil {
+		t.Error("Expected no error in RequestExport")
+	}
+}
+
+func TestSuccessRequestSince(t *testing.T) {
+	setup()
+	defer teardown()
+
+	urlToHandle, exportName, format := mockRequestExportArgs()
+
+	date := time.Now()
+
+	mux.HandleFunc(urlToHandle, func(w http.ResponseWriter, r *http.Request) {
+		since, ok := r.URL.Query()["since"]
+		if ok == false || since[0] != strconv.FormatInt(date.Unix(), 10) {
+			http.Error(w, "error", http.StatusBadRequest)
+			return
+		}
+
+		w.WriteHeader(http.StatusAccepted)
+
+		fmt.Fprintf(w, goodRequestResponse)
+	})
+
+	_, err := client.Export.RequestSince(exportName, format, date)
 
 	if err != nil {
 		t.Error("Expected no error in RequestExport")
@@ -53,12 +87,50 @@ func TestSuccessRequestWithSearch(t *testing.T) {
 			return
 		}
 
+		_, ok = r.URL.Query()["since"]
+		if ok == true {
+			t.Error("parameter 'since' should not be here")
+		}
+
 		w.WriteHeader(http.StatusAccepted)
 
 		fmt.Fprintf(w, goodRequestResponse)
 	})
 
 	_, err := client.Export.RequestWithSearch(exportName, format, searchTestName)
+
+	if err != nil {
+		t.Error("Expected no error in RequestExport")
+	}
+}
+
+func TestSuccessRequestWithSearchSince(t *testing.T) {
+	setup()
+	defer teardown()
+
+	urlToHandle, exportName, format := mockRequestExportArgs()
+	searchTestName := "test search"
+	date := time.Now()
+
+	mux.HandleFunc(urlToHandle, func(w http.ResponseWriter, r *http.Request) {
+		searchName, ok := r.URL.Query()["ss"]
+		if ok == false || searchName[0] != searchTestName {
+			http.Error(w, "error", http.StatusBadRequest)
+			return
+		}
+
+		since, ok := r.URL.Query()["since"]
+		if ok == false || since[0] != strconv.FormatInt(date.Unix(), 10) {
+			http.Error(w, "error", http.StatusBadRequest)
+			return
+		}
+
+		w.WriteHeader(http.StatusAccepted)
+
+		fmt.Fprintf(w, goodRequestResponse)
+	})
+
+	_, err := client.Export.RequestWithSearchSince(exportName, format, searchTestName, date)
 
 	if err != nil {
 		t.Error("Expected no error in RequestExport")

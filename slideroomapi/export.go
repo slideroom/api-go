@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"time"
 )
 
 // SlideRoomResourceExport contains functions for handling the export resource
@@ -31,17 +32,15 @@ type RequestExportResponse struct {
 	Message string `json:"message"`
 }
 
-// RequestWithSearch will request an export with a format filtering the results with a saved search
-//
-// Parameters:
-//   exportTitle - The title of a Custom Export (You can find your exports in Settings->Custom Exports)
-//   format - The format of the export (see ExportFormat)
-//   savedSearchName - The name of a search you have saved from review.slideroom.com
-func (e *SlideRoomResourceExport) RequestWithSearch(exportTitle string, format ExportFormat, savedSearchName string) (res *RequestExportResponse, err error) {
+func (e *SlideRoomResourceExport) request(exportTitle string, format ExportFormat, savedSearchName string, since int64) (res *RequestExportResponse, err error) {
 	params := url.Values{}
 
 	if len(savedSearchName) > 0 {
 		params.Add("ss", savedSearchName)
+	}
+
+	if since != 0 {
+		params.Add("since", strconv.FormatInt(since, 10))
 	}
 
 	params.Add("export", exportTitle)
@@ -60,13 +59,44 @@ func (e *SlideRoomResourceExport) RequestWithSearch(exportTitle string, format E
 	return
 }
 
+// RequestWithSearch will request an export with a format filtering the results with a saved search
+//
+// Parameters:
+//   exportTitle - The title of a Custom Export (You can find your exports in Settings->Custom Exports)
+//   format - The format of the export (see ExportFormat)
+//   savedSearchName - The name of a search you have saved from review.slideroom.com
+func (e *SlideRoomResourceExport) RequestWithSearch(exportTitle string, format ExportFormat, savedSearchName string) (res *RequestExportResponse, err error) {
+	return e.request(exportTitle, format, savedSearchName, 0)
+}
+
+// RequestWithSearchSince will request an export with a format filtering the results with a saved search
+//
+// Parameters:
+//   exportTitle - The title of a Custom Export (You can find your exports in Settings->Custom Exports)
+//   format - The format of the export (see ExportFormat)
+//   savedSearchName - The name of a search you have saved from review.slideroom.com
+//   since - A Time object to only pull applications since a specific time.
+func (e *SlideRoomResourceExport) RequestWithSearchSince(exportTitle string, format ExportFormat, savedSearchName string, since time.Time) (res *RequestExportResponse, err error) {
+	return e.request(exportTitle, format, savedSearchName, since.Unix())
+}
+
+// RequestSince will request an export with a format filtering the results with a since
+//
+// Parameters:
+//   exportTitle - The title of a Custom Export (You can find your exports in Settings->Custom Exports)
+//   format - The format of the export (see ExportFormat)
+//   since - A Time object to only pull applications since a specific time.
+func (e *SlideRoomResourceExport) RequestSince(exportTitle string, format ExportFormat, since time.Time) (res *RequestExportResponse, err error) {
+	return e.request(exportTitle, format, "", since.Unix())
+}
+
 // Request will request an export using the complete set of submissions
 //
 // Parameters:
 //   exportTitle - The title of a Custom Export (You can find your exports in Settings->Custom Exports)
 //   format - The format of the export (see ExportFormat)
-func (e *SlideRoomResourceExport) Request(exportName string, format ExportFormat) (res *RequestExportResponse, err error) {
-	return e.RequestWithSearch(exportName, format, "")
+func (e *SlideRoomResourceExport) Request(exportTitle string, format ExportFormat) (res *RequestExportResponse, err error) {
+	return e.request(exportTitle, format, "", 0)
 }
 
 // DownloadExportResponse contains server response of a download
