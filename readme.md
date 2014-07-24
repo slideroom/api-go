@@ -25,11 +25,11 @@ func main() {
 	//requestRes, err := s.Export.RequestWithSearch("Sample", slideroomapi.Csv, "Dallas")
 	requestRes, err := s.Export.Request("Sample", slideroomapi.Csv)
 
-	fmt.Println(requestRes.Submissions)
-
 	if err != nil {
 		panic(err)
 	}
+
+	fmt.Println(requestRes.Submissions)
 
 	// check every 10 seconds until it is done
 	c := time.Tick(10 * time.Second)
